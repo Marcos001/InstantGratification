@@ -3,26 +3,51 @@ from keras.models import Sequential
 from keras.layers import Dense, Dropout
 from keras.optimizers import RMSprop, Adam
 
+
 ''' visualize '''
 import matplotlib.pyplot as plt
 plt.style.use('seaborn')
 
 
-def NeuralNetwork(entrada, num_classes):
+def NeuralNetwork(entrada, num_classes, ta):
 
     model = Sequential()
     model.add(Dense(10, activation='relu', input_shape=(entrada,)))
     model.add(Dropout(0.2))
-    model.add(Dense(12, activation='relu'))
+    model.add(Dense(10, activation='relu'))
     model.add(Dropout(0.2))
     model.add(Dense(num_classes, activation='sigmoid'))
 
-    model.compile(optimizer=Adam(lr=0.0001),
+    model.compile(optimizer=Adam(lr=ta),
                   loss='binary_crossentropy',
                   metrics=['accuracy'])
     return model
 
+def normalization(data):
+    from sklearn import preprocessing
+    return preprocessing.normalize([data])
 
+def standardization(data):
+    from sklearn import preprocessing
+    X_scaled = preprocessing.scale(data)
+    return X_scaled
+
+def standardization_scalar(data):
+    '''
+    Standardization (Standard Scalar)
+    :param data:
+    :return: data scaled
+    '''
+    from sklearn.preprocessing import StandardScaler
+    scaler = StandardScaler()
+    data_scaled = scaler.fit_transform(data)
+    return data_scaled
+
+def normalize_max_min(data):
+    from sklearn.preprocessing import MinMaxScaler
+    scaler = MinMaxScaler()
+    data_scaled = scaler.fit_transform(data)
+    return data_scaled
 
 
 def proportion_split(total, verbose=False):

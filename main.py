@@ -19,7 +19,7 @@ import modulos as md
 
 ''' configure  '''
 
-vez = 3
+vez = 5
 
 path_root = '/media/marcos/Files - ntfs/datasets/InstantGratification/'
 
@@ -29,32 +29,27 @@ print('read the data...')
 df = pd.read_csv(path_root+'train.csv')
 
 
-print('select features ans labels')
 ''' select features ans labels '''
 features = df.ix[:,1:257]
 labels = df.ix[:,257]
 
-print('SHAPE -> Features :',features.shape ,'Labels :',labels.shape, 'df Rows :', len(df), 'df Columms :', len(df.columns))
+
 
 ''' selecionado uma amostra '''
 
 size = 262144
 
-print('pre-processing')
 ''' convert data in tensor '''
-x = np.array(features.ix[:size,:])
-y = np.array(labels.ix[:size])
-
-''' tranform data in float '''
-x = x.astype('float')
+x  = np.array(features.ix[:size,:]).astype('float32')
+y  = np.array(labels.ix[:size]).astype('float32')
 
 ''' normalize your data '''
-x -= x.mean(axis=0)
-x /= x.std(axis=0)
+# x -= x.mean(axis=0)
+# x /= x.std(axis=0)
+x = md.standardization(x)
 
 ''' one hot encoding '''
 y = to_categorical(y)
-
 
 
 ''' split data in train, test e validation '''
@@ -76,14 +71,14 @@ y_val = y[end:,]
 num_classes = 2
 epocas = 20
 lote = 32
-taxa_aprendizado = 0.001
+ta = 0.001
 
 
 print('define Neural Network')
-nn = md.NeuralNetwork(x.shape[1],num_classes)
+nn = md.NeuralNetwork(x.shape[1],num_classes, ta)
 
 print('train NN')
-hist = nn.fit(x_train,y_train, epochs=20, validation_data=(x_val, y_val), verbose=1)
+hist = nn.fit(x_train,y_train, epochs=10, batch_size=lote, validation_data=(x_val, y_val), verbose=1)
 
 print('Results > ')
 md.plots_log_train(hist.history, '/home/marcos/Imagens/Train NN/'+str(vez)+'.1.png')
@@ -98,3 +93,5 @@ auc = auc(fpr, tpr)
 
 md.plot_ROC(fpr, tpr, 'NN (area = {:.3f})'.format(auc), '/home/marcos/Imagens/Train NN/'+str(vez)+'.2.png')
 print('Done.')
+
+#estatisticas = {'epocas':epocas, 'lr':ta}
