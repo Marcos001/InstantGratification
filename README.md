@@ -1,0 +1,2 @@
+# InstantGratification
+Competition on Kaggle
